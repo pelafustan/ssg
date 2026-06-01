@@ -1,12 +1,15 @@
-from typing import MutableSequence
 import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
     def test_props_01(self):
-        node = HTMLNode(tag="url", props={"href": "https://github.com", "target": "_blank"})
-        self.assertEqual(node.props_to_html(), " href=\"https://github.com\" target=\"_blank\"")
+        node = HTMLNode(
+            tag="url", props={"href": "https://github.com", "target": "_blank"}
+        )
+        self.assertEqual(
+            node.props_to_html(), ' href="https://github.com" target="_blank"'
+        )
 
     def test_not_implemented(self):
         node = HTMLNode("p", "this is a paragraph")
@@ -14,7 +17,10 @@ class TestHTMLNode(unittest.TestCase):
 
     def test_repr(self):
         node = HTMLNode("p", "this is other paragraph")
-        self.assertEqual(repr(node), "tag: p\nvalue: this is other paragraph\nchildren: None\nprops: None")
+        self.assertEqual(
+            repr(node),
+            "tag: p\nvalue: this is other paragraph\nchildren: None\nprops: None",
+        )
 
 
 class TestLeafNode(unittest.TestCase):
@@ -27,22 +33,24 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("p", "")
         self.assertRaises(ValueError, node.to_html)
 
+
 class TestParentNode(unittest.TestCase):
     def test_to_html_with_children(self):
         child_node = LeafNode("span", "child")
         parent_node = ParentNode("div", [child_node])
-        self.assertEqual(parent_node.to_html(), "<div>\n  <span>child</span>\n</div>")
+        self.assertEqual(parent_node.to_html(), "<div><span>child</span></div>")
+
     def test_to_html_with_grandchildren(self):
         grandchild_node = LeafNode("b", "grandchild")
         child_node = ParentNode("span", [grandchild_node])
         parent_node = ParentNode("div", [child_node])
         self.assertEqual(
             parent_node.to_html(),
-            "<div>\n  <span>\n    <b>grandchild</b>\n  </span>\n</div>",
+            "<div><span><b>grandchild</b></span></div>",
         )
 
     def test_exception_value(self):
-        children: MutableSequence[HTMLNode] = [LeafNode("p", "this is a test")]
+        children: list[HTMLNode] = [LeafNode("p", "this is a test")]
         node = ParentNode("", children)
         self.assertRaises(ValueError, node.to_html)
 
